@@ -16,7 +16,7 @@ app.post('/exchange-code', (req, res)=>{
     const {code} = req.body;
     const grant_type = 'authorization_code';
     const client_id = '31aitoocsfhst2ro33pldaj30u';
-    const redirect_uri = 'http://localhost:5500/callback.html';
+    const redirect_uri = 'http://ec2-44-201-70-37.compute-1.amazonaws.com:3000/callback.html';
     const client_secrete = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
 
     const params = new URLSearchParams({grant_type}, client_id, redirect_uri, code);
@@ -95,7 +95,7 @@ res.status(500).json(error);
 });
 
 app.listen(3000, () => {
-    console.log('Started api on http://localhost:3000')
+    console.log('Started api on http://ec2-44-201-70-37.compute-1.amazonaws.com:3000')
 })
 
 function extractObjectId(url){

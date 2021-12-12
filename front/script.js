@@ -12,7 +12,7 @@ const file = document.querySelector('input[name="file"]');
 form.addEventListener('submit', async (e) =>{
     e.preventDefault();
     
-    const{url, fields} = await fetch("http://ec2-44-200-107-17.compute-1.amazonaws.com:3000/getuploadurl").then(response =>response.json());
+    const{url, fields} = await fetch("http://ec2-44-201-70-37.compute-1.amazonaws.com:3000/getuploadurl").then(response =>response.json());
     
     const data = {
         bucket: "gif-2-bucket",
