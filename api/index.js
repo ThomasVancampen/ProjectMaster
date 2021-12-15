@@ -16,20 +16,20 @@ app.get('/hello', (req, res) => {
 app.post('/exchange-code', (req, res)=>{
     const {code} = req.body;
     const grant_type = 'authorization_code';
-    const client_id = '31aitoocsfhst2ro33pldaj30u';
-    const redirect_uri = 'http://ec2-44-201-70-37.compute-1.amazonaws.com:3000/front/callback.html';
-    const client_secrete = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
+    const client_id = '7udffkrr5d550gfkere3fhl8bi';
+    const redirect_uri = 'https://ec2-3-236-252-103.compute-1.amazonaws.com:3000/front/callback.html';
+    const client_secret = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
 
     const params = new URLSearchParams({grant_type}, client_id, redirect_uri, code);
 
 
 
-    axios.post(' https://idplab-ictarch-2021.auth.eu-central-1.amazoncognito.com/oauth2/token',
+    axios.post(' https://gif-converter-g2.auth.us-east-1.amazoncognito.com/oauth2/token',
     params.toString(),
     {
         auth: {
             username: client_id,
-            password: client_secrete,
+            password: client_secret,
         }
     }
     ).then(result => {
@@ -48,14 +48,14 @@ const s3 = new AWS.S3({
 
 const bucketName = 'gif-2-bucket';
 app.use(express.json());
-
 app.get('/', (req, res) => {
  res.sendFile(path.join(__dirname, '../front/index.html'));
 });
-
-app.get('/callback', (req, res) => {
- res.sendFile(path.join(__dirname, '../front/callback.html'));
+app.get('/front/callback.html', (req, res) => {
+res.sendFile(path.join(__dirname, '../front/callback.html'));
 });
+
+
 
 
 app.use(cors());
@@ -100,7 +100,7 @@ res.status(500).json(error);
 });
 
 app.listen(3000, () => {
-    console.log('Started api on ec2-3-236-252-103.compute-1.amazonaws.com:3000')
+    console.log('Started api on http://ec2-3-236-252-103.compute-1.amazonaws.com:3000')
 })
 
 function extractObjectId(url){
