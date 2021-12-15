@@ -4,6 +4,7 @@ const axios = require('axios');
 const {v4} = require("uuid");
 const cors = require('cors');
 const path = require('path');
+const mysql = require('mysql');
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.post('/exchange-code', (req, res)=>{
     const {code} = req.body;
     const grant_type = 'authorization_code';
     const client_id = '7udffkrr5d550gfkere3fhl8bi';
-    const redirect_uri = 'https://ec2-3-236-252-103.compute-1.amazonaws.com:3000/front/callback.html';
+    const redirect_uri = 'https://ec2-44-200-41-166.compute-1.amazonaws.com:3000/front/callback.html';
     const client_secret = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
 
     const params = new URLSearchParams({grant_type}, client_id, redirect_uri, code);
@@ -54,7 +55,17 @@ app.get('/', (req, res) => {
 app.get('/front/callback.html', (req, res) => {
 res.sendFile(path.join(__dirname, '../front/callback.html'));
 });
+app.get('/front/script.js', (req, res) => {
+res.sendFile(path.join(__dirname, '../front/script.js'));
+});
 
+
+const con = mysql.createConnection({
+    host: 'gif-project-db.cavxmh9v9svl.us-east-1.rds.amazonaws.com',
+    user: 'admin',
+    password: 'IctGroep2',
+    database: 'gif_db'
+});
 
 
 
@@ -100,7 +111,7 @@ res.status(500).json(error);
 });
 
 app.listen(3000, () => {
-    console.log('Started api on http://ec2-3-236-252-103.compute-1.amazonaws.com:3000')
+    console.log('Started api on http://ec2-44-200-41-166.compute-1.amazonaws.com:3000')
 })
 
 function extractObjectId(url){
@@ -125,6 +136,31 @@ function extractObjectId(url){
     ContentType: contentType,
     });
     }
+    
+    function addToDatabase(uuid, featured) {
+  con.connect(function(err) {
+    if (err) throw err;
+
+    let sql = `INSERT INTO gifs (uuid, createdtime, featured) VALUES ('${uuid}', now(), '${featured}')`;  
+
+    con.query(sql, function(err) {throw err;});
+  });
+}
+
+function getFromDatabase(uuid) {
+  con.connect(function(err) {
+    if (err) throw err;
+
+    let sql = `SELECT * FROM gifs WHERE uuid = '${uuid}'`;
+
+    con.query(sql, function(err, result) {
+      if (err) throw err;
+      console.log(result);
+
+      //TODO result
+    }); 
+  });
+}
     
 
 
