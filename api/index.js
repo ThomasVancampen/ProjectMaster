@@ -3,6 +3,7 @@ const AWS = require('aws-sdk');
 const axios = require('axios');
 const {v4} = require("uuid");
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 
@@ -16,7 +17,7 @@ app.post('/exchange-code', (req, res)=>{
     const {code} = req.body;
     const grant_type = 'authorization_code';
     const client_id = '31aitoocsfhst2ro33pldaj30u';
-    const redirect_uri = 'http://ec2-44-201-70-37.compute-1.amazonaws.com:3000/callback.html';
+    const redirect_uri = 'http://ec2-44-201-70-37.compute-1.amazonaws.com:3000/front/callback.html';
     const client_secrete = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
 
     const params = new URLSearchParams({grant_type}, client_id, redirect_uri, code);
@@ -46,10 +47,14 @@ const s3 = new AWS.S3({
 })
 
 const bucketName = 'gif-2-bucket';
-app.use(express.static('../front'));
 app.use(express.json());
+
 app.get('/', (req, res) => {
-res.json('Hello world!');
+ res.sendFile(path.join(__dirname, '../front/index.html'));
+});
+
+app.get('/callback', (req, res) => {
+ res.sendFile(path.join(__dirname, '../front/callback.html'));
 });
 
 
@@ -95,7 +100,7 @@ res.status(500).json(error);
 });
 
 app.listen(3000, () => {
-    console.log('Started api on http://ec2-44-201-70-37.compute-1.amazonaws.com:3000')
+    console.log('Started api on ec2-3-236-252-103.compute-1.amazonaws.com:3000')
 })
 
 function extractObjectId(url){
