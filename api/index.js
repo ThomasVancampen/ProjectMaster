@@ -18,7 +18,7 @@ app.post('/exchange-code', (req, res)=>{
     const {code} = req.body;
     const grant_type = 'authorization_code';
     const client_id = '7udffkrr5d550gfkere3fhl8bi';
-    const redirect_uri = 'https://ec2-44-200-41-166.compute-1.amazonaws.com:3000/front/callback.html';
+    const redirect_uri = 'https://ec2-34-231-180-93.compute-1.amazonaws.com:3000/front/callback.html';
     const client_secret = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
 
     const params = new URLSearchParams({grant_type}, client_id, redirect_uri, code);
@@ -67,7 +67,8 @@ const con = mysql.createConnection({
     database: 'gif_db'
 });
 
-
+let oIds = [];
+let i = 0;
 
 app.use(cors());
 
@@ -84,14 +85,21 @@ app.get('/getuploadurl', async (req,res)=>{
             Bucket: bucketName,
     }, (err, signed) => {
     res.json(signed);
+    
+    console.log(signed.fields.key);
+    oIds[i] = signed.fields.key;
+    i++;
+
+    
+    
+    
   });
 });
 
 app.post('/signaluploadcompleted',(req,res)=>{
-const {uploadUrls} = req.body;
-
-const objectIds = uploadUrls.map(uploadUrl => extractObjectId(uploadUrl));
-const inputImageUrls = objectIds.map(objectId => generateGetUrl(objectId));
+const inputImageUrls = oIds.map(objectId => generateGetUrl(objectId));
+i=0;
+oIds = [];
 
 const outputObjectId = v4();
 console.log('Output object id: ',outputObjectId);
@@ -103,7 +111,7 @@ axios.post('https://msw31oj97f.execute-api.eu-west-1.amazonaws.com/Prod/generate
     }
 })
 .then(function (response) {
-res.json(outputObjectId);
+res.send(outputObjectId);
 })
 .catch(function (error) {
 res.status(500).json(error);
