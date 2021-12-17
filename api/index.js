@@ -18,7 +18,7 @@ app.post('/exchange-code', (req, res)=>{
     const {code} = req.body;
     const grant_type = 'authorization_code';
     const client_id = '7udffkrr5d550gfkere3fhl8bi';
-    const redirect_uri = 'https://ec2-34-231-180-93.compute-1.amazonaws.com:3000/front/callback.html';
+    const redirect_uri = 'https://ec2-3-238-239-105.compute-1.amazonaws.com:3000/front/callback.html';
     const client_secret = 'bo8igterhbm1aiibv5ph53lta816t4n3qlbduhgqtfgs6a8bb6o';
 
     const params = new URLSearchParams({grant_type}, client_id, redirect_uri, code);
@@ -100,6 +100,7 @@ app.post('/signaluploadcompleted',(req,res)=>{
 const inputImageUrls = oIds.map(objectId => generateGetUrl(objectId));
 i=0;
 oIds = [];
+console.log(i);
 
 const outputObjectId = v4();
 console.log('Output object id: ',outputObjectId);
@@ -107,27 +108,51 @@ const outputImageUrl = generatePutUrl(outputObjectId, 'image/gif');
 
 axios.post('https://msw31oj97f.execute-api.eu-west-1.amazonaws.com/Prod/generate/gif', {inputImageUrls,outputImageUrl},
 {headers:{
-    'x-api-key': 'SIdHi3lzwma61h4GeBGR96ZD4rpsa3mb6iKVlMG7 '
+    'x-api-key': 'SIdHi3lzwma61h4GeBGR96ZD4rpsa3mb6iKVlMG7'
     }
 })
 .then(function (response) {
-res.send(outputObjectId);
+
+
+getImage(outputObjectId)
+      .then((img)=>{
+          let image="<img src='data:image/gif;base64," + encode(img.Body) + "'" + "/>";
+          let startHTML="<html><body></body>";
+          let endHTML="</body></html>";
+          let html=startHTML + image + endHTML;
+        res.send(html);
+      }).catch((e)=>{
+        res.send(e);
+      });
+
 })
 .catch(function (error) {
 res.status(500).json(error);
 });
+
 });
 
 app.listen(3000, () => {
-    console.log('Started api on http://ec2-44-200-41-166.compute-1.amazonaws.com:3000')
-})
+    console.log('Started api on http://ec2-3-238-239-105.compute-1.amazonaws.com:3000');
+});
 
-function extractObjectId(url){
-    const urlWithoutParams = url.split('?')[0];
-    const splitUrlInSlashes = urlWithoutParams.split('/')
-    return splitUrlInSlashes[splitUrlInSlashes.length - 1];
-    }
-    
+async function getImage(objectId){
+        const data =  s3.getObject(
+          {
+              Bucket: bucketName,
+              Key: objectId
+            }
+          
+        ).promise();
+        return data;
+      }
+      
+function encode(data){
+          let buf = Buffer.from(data);
+          let base64 = buf.toString('base64');
+          return base64;
+      }
+
     function generateGetUrl(objectId){
     return s3.getSignedUrl("getObject",{
     Key: objectId,
