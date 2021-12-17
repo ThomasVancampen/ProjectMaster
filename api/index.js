@@ -62,6 +62,7 @@ res.sendFile(path.join(__dirname, '../front/script.js'));
 
 const con = mysql.createConnection({
     host: 'gif-project-db.cavxmh9v9svl.us-east-1.rds.amazonaws.com',
+    port : '3306',
     user: 'admin',
     password: 'IctGroep2',
     database: 'gif_db'
@@ -112,8 +113,6 @@ axios.post('https://msw31oj97f.execute-api.eu-west-1.amazonaws.com/Prod/generate
     }
 })
 .then(function (response) {
-
-
 getImage(outputObjectId)
       .then((img)=>{
           let image="<img src='data:image/gif;base64," + encode(img.Body) + "'" + "/>";
@@ -124,6 +123,8 @@ getImage(outputObjectId)
       }).catch((e)=>{
         res.send(e);
       });
+              addToDatabase(outputObjectId, false);
+        console.log("uploaded")
 
 })
 .catch(function (error) {
@@ -173,10 +174,13 @@ function encode(data){
     function addToDatabase(uuid, featured) {
   con.connect(function(err) {
     if (err) throw err;
-
+    console.log("conected")
     let sql = `INSERT INTO gifs (uuid, createdtime, featured) VALUES ('${uuid}', now(), '${featured}')`;  
 
-    con.query(sql, function(err) {throw err;});
+    con.query(sql, function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+  });
   });
 }
 
