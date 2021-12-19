@@ -184,20 +184,6 @@ function encode(data){
   });
 }
 
-function getFromDatabase(uuid) {
-  con.connect(function(err) {
-    if (err) throw err;
-
-    let sql = `SELECT * FROM gifs WHERE uuid = '${uuid}'`;
-
-    con.query(sql, function(err, result) {
-      if (err) throw err;
-      console.log(result);
-
-      //TODO result
-    }); 
-  });
-}
     
 
 
